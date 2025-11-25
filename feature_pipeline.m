@@ -1,6 +1,6 @@
 % A pipeline to isolate features for every patch.
 % Prereq. Vars:
-subject = "Jojo"; % Dona, Jojo
+subject = "Dona"; % Dona, Jojo
 hl = 2; % patch half-length
 r = 1; % IN mask radius/half length
 
@@ -46,7 +46,7 @@ end
 rm_conflict(@entropy, sw_parent_path) % which('entropy'), sanity check to ensure we're using the MATLAB inbuilt function
 rm_conflict(@fspecial, sw_parent_path) % which('fspecial')
 
-K = length(measure_type); % Required to stop parfor fromm complaining, see below:
+K = length(measure_type); % Required to stop parfor from complaining, see below:
 parfor i = 1:size(patch_table, 1) % OMG this is RIDICULOUSLY faster, WTF!!!
     fprintf("Stim%d\n", i)
     for j = high_RMS

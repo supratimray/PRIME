@@ -7,7 +7,7 @@ idx = 1;
 
 % Directories:
 pdir = fileparts(pwd);
-img_dir = fullfile(pdir, "data/Images");
+img_dir = fullfile(pdir, "data/images");
 save_dir = "savedData";
 if ~isfolder(fullfile(save_dir, "responses")), mkdir(fullfile(save_dir, "responses")), end
 

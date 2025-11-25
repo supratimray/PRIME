@@ -231,14 +231,19 @@ responseDetails = load(fileName);
         [~,sortIndex] = sort(featureVals);
 
         % Plot
-        hold(hERP,'on'); hold(hFR,'on'); hold(hDeltaPSD,'on');
-
+        hold(hERP,'on'); hold(hFR,'on'); hold(hDeltaPSD,'on'); hold(hCorr,'on');
+        delGammaVals = NaN*featureVals;
         for i=1:numImagesPerType
             pos = sortIndex(i);
     
             % Plot Patch
-            image(cell2mat(patches{pos,1}),'Parent',hImagePatches(i)); % Plot Patch
-            set(hImagePatches(i),'XTickLabel',[],'YTickLabel',[]);
+            image(patchDetails.x_axis_deg,patchDetails.y_axis_deg(end:-1:1),cell2mat(patches{pos,1}),'Parent',hImagePatches(i)); % Plot Patch
+            if i==numRows
+                set(hImagePatches(i),'YDir','normal','Colormap',gray)
+            else
+                set(hImagePatches(i),'YDir','normal','XTickLabel',[],'YTickLabel',[],'Colormap',gray)
+            end
+            title(hImagePatches(i),sprintf('%0.3g',featureVals(pos)),'color',colorNames(i,:),'FontWeight','bold');
 
             % Plot dTF
             pcolor(hTF(i),responseDetails.t_TF,responseDetails.f_TF,responses{pos,1}.del_TF);
@@ -247,11 +252,18 @@ responseDetails = load(fileName);
             if i~=numImagesPerType
                 set(hTF(i),'XTickLabel',[],'YTickLabel',[]);
             end
+            delGammaVals(pos) = mean(responses{pos,1}.del_PSD((responseDetails.f_st>=30)&(responseDetails.f_st<80)));
+            title(hTF(i),sprintf('%0.3g',delGammaVals(pos)),'FontWeight','bold')
 
             plot(hERP,responseDetails.t,responses{pos,1}.ERP,'color',colorNames(i,:)); % ERP
             plot(hFR,responseDetails.t_FR,responses{pos,1}.FR,'color',colorNames(i,:)); % Firing Rate
             plot(hDeltaPSD,responseDetails.f_st,responses{pos,1}.del_PSD,'color',colorNames(i,:)); % Delta PSD
+
+            plot(hCorr,delGammaVals(pos),featureVals(pos),'Marker','.','color',colorNames(i,:))
+            xlabel(hCorr,'del\_gamma')
+            ylabel(hCorr,featureTypeString(get(hFeatureType,'val')))
         end
+        title(hCorr,sprintf('Pearson r = %0.2g; Spearman r = %0.2g', corr(delGammaVals,featureVals,"Type","Pearson"), corr(delGammaVals,featureVals,"Type","Spearman")))
 
         % Rescale zLims
         zRange = getZLims(hTF);
